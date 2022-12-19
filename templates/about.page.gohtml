@@ -1,0 +1,15 @@
+{{template "base" .}}
+
+{{define "content"}}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1 class="sample-text">This is a about-page</h1>
+                <p class="content-text">This is content</p>
+
+                <p>Name of person come from data is: {{index .StringMap "name"}}</p>
+                <p>Name of remote ip is: {{index .StringMap "remote_ip"}}</p>
+            </div>
+        </div>
+    </div>
+{{end}}
