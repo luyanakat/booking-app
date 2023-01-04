@@ -24,7 +24,7 @@ func AddDefaultData(td *models.TemplateData) *models.TemplateData {
 func WriteTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 	// get the template cache from the app config
 	var tc map[string]*template.Template
-
+	
 	if app.UseCache {
 		tc = app.TemplateCache
 	} else {

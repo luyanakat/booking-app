@@ -36,12 +36,18 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	stringMap := make(map[string]string)
 	remoteIp := m.App.Session.GetString(r.Context(), "remote_ip")
-	userName := m.App.Session.GetString(r.Context(), "remote_user")
 
 	stringMap["remote_ip"] = remoteIp
-	stringMap["remote_user"] = userName
-	stringMap["name"] = "Nai"
+
 	render.WriteTemplate(w, "about.page.gohtml", &models.TemplateData{
 		StringMap: stringMap,
 	})
+}
+
+func (m *Repository) Normal(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (m *Repository) Luxurious(w http.ResponseWriter, r *http.Request) {
+
 }
