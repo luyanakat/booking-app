@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
+	"github.com/luyanakat/booking-app/internal/config"
+	"github.com/luyanakat/booking-app/internal/handlers"
+	"github.com/luyanakat/booking-app/internal/render"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/luyanakat/booking-app/pkg/config"
-	"github.com/luyanakat/booking-app/pkg/handlers"
-	"github.com/luyanakat/booking-app/pkg/render"
 )
 
 const portNumber = ":3000"

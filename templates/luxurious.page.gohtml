@@ -1,5 +1,73 @@
 {{template "base" .}}
 
 {{define "content"}}
-    
+    <div class="container" style="margin-top: 100px;">
+        <div class="row">
+            <div class="">
+                <img src="../static/images/luxurious_room.png" alt="Normal room"
+                     class="room-image img-fluid rounded mx-auto d-block">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <div class="col">
+            <h1 class="text-center mt-5">Welcome to Our Luxurious Room </h1>
+            <p class=" mt-2">Your home away form home, set on the majestic waters of the Atlentic Ocean, this will be a
+                remembering vacation.
+                Your home away form home, set on the majestic waters of the Atlentic Ocean, this will be a remembering
+                vacation.
+                Your home away form home, set on the majestic waters of the Atlentic Ocean, this will be a remembering
+                vacation.
+                Your home away form home, set on the majestic waters of the Atlentic Ocean, this will be a remembering
+                vacation.
+                Your home away form home, set on the majestic waters of the Atlentic Ocean, this will be a remembering
+                vacation.
+                Your home away form home, set on the majestic waters of the Atlentic Ocean, this will be a remembering
+                vacation.
+                Your home away form home, set on the majestic waters of the Atlentic Ocean, this will be a remembering
+                vacation.
+                Your home away form home, set on the majestic waters of. </p>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col text-center">
+                <a id="check-availability-btn" href="#!" class="btn btn-primary mt-3">Booking Room Now</a>
+            </div>
+        </div>
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script>
+        document.getElementById('check-availability-btn').addEventListener("click", function () {
+            let html = `
+            <form id="check-avaibility-form" class="container mt-2 mb-2 needs-validation" action="booking.html" novalidate>
+                        <div class="form-row">
+                            <div class="col">
+                                <div id="selectDateHelp" class="form-text mb-3">Format (dd-mm-yyyy)</div>
+                                <div class="row" id="reservation-dates-modal">
+                                    <div class="col">
+                                        <input disabled type="text" name="start" id="start" required class="form-control"
+                                            placeholder="Arrival Date" autocomplete="off">
+                                    </div>
+                                    <div class="col">
+                                        <input disabled type="text" name="end" id="end" required class="form-control"
+                                            placeholder="Departure" autocomplete="off">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+            `
+
+            // add event for btn
+            attention.custom({
+                title: 'Please choose the date!',
+                html: html,
+            })
+        })
+    </script>
 {{end}}

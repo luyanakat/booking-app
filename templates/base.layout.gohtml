@@ -44,11 +44,11 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="booking.html" tabindex="-1" aria-disabled="true">Book
+                            <a class="nav-link active" href="/search-availability" tabindex="-1" aria-disabled="true">Book
                                 now</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="contact.html" tabindex="-1" aria-disabled="true">Contact</a>
+                            <a class="nav-link" href="/contact" tabindex="-1" aria-disabled="true">Contact</a>
                         </li>
                     </ul>
 
@@ -163,6 +163,10 @@
     <script src="https://unpkg.com/notie"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    {{block "js" .}}
+
+
+    {{end}}
     <script>
         let attention = Prompt();
 
@@ -185,41 +189,6 @@
                 }, false)
             })
         })()
-
-        const elem = document.getElementById('reservation-dates');
-        const rangepicker = new DateRangePicker(elem, {
-            format: "dd-mm-yyyy",
-        });
-
-        document.getElementById("searchBtn").addEventListener("click", function () {
-            let html = `
-            <form id="check-avaibility-form" class="container mt-2 mb-2 needs-validation" action="booking.html" novalidate>
-                        <div class="form-row">
-                            <div class="col">
-                                <div id="selectDateHelp" class="form-text mb-3">Format (dd-mm-yyyy)</div>
-                                <div class="row" id="reservation-dates-modal">
-                                    <div class="col">
-                                        <input disabled type="text" name="start" id="start" required class="form-control"
-                                            placeholder="Arrival Date" autocomplete="off">
-                                    </div>
-                                    <div class="col">
-                                        <input disabled type="text" name="end" id="end" required class="form-control"
-                                            placeholder="Departure" autocomplete="off">
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </form>
-            `
-
-            // add event for btn 
-            attention.custom({
-                title: 'Please choose the date!',
-                html: html,
-            })
-        })
-
 
 
         function notify(msg, msgType) {
@@ -299,18 +268,16 @@
                     title = '',
                 } = c;
 
-                const { value: formValues } = await Swal.fire({
+                const { value: result } = await Swal.fire({
                     title: title,
                     html: html,
                     backdrop: false,
                     focusConfirm: false,
                     showCancelButton: true,
                     willOpen: () => {
-                        const elem = document.getElementById('reservation-dates-modal');
-                        const rangepicker = new DateRangePicker(elem, {
-                            format: "dd-mm-yyyy",
-                            showOnFocus: true,
-                        })
+                        if (c.willOpen !== undefined) {
+                            c.willOpen()
+                        }
                     },
                     preConfirm: () => {
                         return [
@@ -319,13 +286,24 @@
                         ]
                     },
                     didOpen: () => {
-                        document.getElementById('start').removeAttribute('disabled')
-                        document.getElementById('end').removeAttribute('disabled')
+                        if (c.didOpen !== undefined) {
+                            c.didOpen()
+                        }
                     }
                 })
 
-                if (formValues) {
-                    Swal.fire(JSON.stringify(formValues))
+                if (result) {
+                    if (result.dismiss != Swal.DismissReason.cancel) {
+                        if (result.value !== '') {
+                            if (c.callback !== undefined) {
+                                c.callback(result)
+                            }
+                        } else {
+                            c.callback(false)
+                        }
+                    } else {
+                        c.callback(false)
+                    }
                 }
             }
 
