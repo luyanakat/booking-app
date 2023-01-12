@@ -88,7 +88,7 @@
                     let formData = new FormData(form)
 
                     formData.append('csrf_token', {{.CSRFToken}})
-
+s
                     fetch('/search-availability-json', {
                         method: 'post',
                         body: formData,
