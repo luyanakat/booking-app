@@ -2,6 +2,7 @@ package render
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/justinas/nosurf"
 	"github.com/luyanakat/booking-app/internal/config"
@@ -28,7 +29,7 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 	return td
 }
 
-func WriteTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) {
+func WriteTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) error {
 	// get the template cache from the app config
 	var tc map[string]*template.Template
 
@@ -41,7 +42,7 @@ func WriteTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *mode
 	// get requested template from cache
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal("could not get template from template cache")
+		return errors.New("can't get template from cache")
 	}
 
 	buf := new(bytes.Buffer)
@@ -54,7 +55,10 @@ func WriteTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *mode
 	_, err := buf.WriteTo(w)
 	if err != nil {
 		log.Println(err)
+		return err
 	}
+
+	return nil
 }
 
 func CreateTemplateCache() (map[string]*template.Template, error) {
