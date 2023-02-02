@@ -6,10 +6,12 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/luyanakat/booking-app/internal/config"
 	"github.com/luyanakat/booking-app/internal/handlers"
+	"github.com/luyanakat/booking-app/internal/helpers"
 	"github.com/luyanakat/booking-app/internal/models"
 	"github.com/luyanakat/booking-app/internal/render"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -17,6 +19,8 @@ const portNumber = ":3000"
 
 var app config.AppConfig
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 func main() {
 	err := run()
@@ -41,6 +45,12 @@ func run() error {
 	// In deploy mode, change this
 	app.InProduction = false
 
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true /////
@@ -61,6 +71,7 @@ func run() error {
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandle(repo)
 	render.NewTemplates(&app)
+	helpers.NewHelpers(&app)
 
 	return nil
 }
