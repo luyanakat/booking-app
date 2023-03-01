@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/luyanakat/booking-app/internal/config"
+	"github.com/luyanakat/booking-app/internal/driver"
 	"github.com/luyanakat/booking-app/internal/handlers"
 	"github.com/luyanakat/booking-app/internal/helpers"
 	"github.com/luyanakat/booking-app/internal/models"
@@ -23,10 +24,11 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 
 func main() {
-	err := run()
+	db, err := run()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.SQL.Close()
 
 	fmt.Printf("Start server on port: %s \n", portNumber)
 	server := http.Server{
@@ -38,9 +40,12 @@ func main() {
 	log.Fatal(err)
 }
 
-func run() error {
+func run() (*driver.DB, error) {
 	//put in session
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
 
 	// In deploy mode, change this
 	app.InProduction = false
@@ -59,19 +64,27 @@ func run() error {
 
 	app.Session = session
 
+	// connect to db
+	log.Println("Connecting to db...")
+	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=postgres password=abc@123")
+	if err != nil {
+		log.Fatal("Can't connect to database")
+	}
+	log.Println("Connected to db!")
+
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
-		return err
+		return nil, err
 	}
 
 	app.TemplateCache = tc
 	app.UseCache = false
 
-	repo := handlers.NewRepo(&app)
+	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandle(repo)
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 	helpers.NewHelpers(&app)
 
-	return nil
+	return db, nil
 }

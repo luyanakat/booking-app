@@ -23,6 +23,7 @@ func routes(app *config.AppConfig) http.Handler {
 	mux.Get("/normal-room", handlers.Repo.Normal)
 	mux.Get("/luxurious-room", handlers.Repo.Luxurious)
 	mux.Get("/contact", handlers.Repo.Contact)
+	mux.Get("/choose-room/{id}", handlers.Repo.ChooseRoom)
 
 	mux.Get("/search-availability", handlers.Repo.Availability)
 	mux.Post("/search-availability", handlers.Repo.PostAvailability)

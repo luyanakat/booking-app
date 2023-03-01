@@ -1,0 +1,21 @@
+{{template "base" .}}
+
+{{define "content"}}
+    <div class="container" style="height: 100vh; margin-top: 120px">
+        <div class="row" style="text-align: center">
+                <h1 style="padding: 20px">Choose a Room</h1>
+
+                {{$rooms := index .Data "rooms"}}
+
+                {{range $rooms}}
+                    <div class="col" style="font-size: 20px">
+                        <form action="/choose-room/{{.ID}}" method="get">
+                            <input class="btn btn-primary mt-3" type="submit" value="{{index .RoomName}}" />
+                        </form>
+                    </div>
+                {{end}}
+
+        </div>
+    </div>
+
+{{end}}
