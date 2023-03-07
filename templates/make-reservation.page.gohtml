@@ -1,11 +1,11 @@
 {{template "base" .}}
 
 {{define "content"}}
-    <div class="container" style="height: 100vh; width: 100%;">
+    <div class="container" style="height: 100vh; width: 100%; margin-top: 120px;">
         <div class="row">
             <div class="col-md-3"></div>
             <div class="col-md-6">
-                <h1 style="margin-top: 160px;">Make reservation</h1>
+                <h1>Make reservation</h1>
                 {{$res := index .Data "reservation"}}
                 <br>
                 <p>
@@ -70,10 +70,5 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col">
-                <p id="mytext"></p>
-            </div>
-        </div>
     </div>
 {{end}}

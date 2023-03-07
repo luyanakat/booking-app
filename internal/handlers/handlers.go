@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/luyanakat/booking-app/internal/driver"
 	"github.com/luyanakat/booking-app/internal/helpers"
 	"github.com/luyanakat/booking-app/internal/repository"
 	"github.com/luyanakat/booking-app/internal/repository/dbrepo"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -33,6 +33,13 @@ func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	}
 }
 
+func NewTestRepo(a *config.AppConfig) *Repository {
+	return &Repository{
+		App: a,
+		DB:  dbrepo.NewTestingsRepo(a),
+	}
+}
+
 func NewHandle(r *Repository) {
 	Repo = r
 }
@@ -48,13 +55,15 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 	res, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
 	if !ok {
-		helpers.ServerError(w, errors.New("cannot get reservation from session"))
+		m.App.Session.Put(r.Context(), "error", "Can't get reservation from session")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 	fmt.Println(res.RoomID)
 	room, err := m.DB.GetRoomByID(res.RoomID)
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "Can't find room")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -82,7 +91,8 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	res, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
 	if !ok {
-		helpers.ServerError(w, errors.New("can't get from session"))
+		m.App.Session.Put(r.Context(), "error", "Can't parse form")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -118,7 +128,8 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 	newReservationID, err := m.DB.InsertReservation(res)
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "Can't insert reser into db")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -132,9 +143,41 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 	err = m.DB.InsertRoomRestriction(restriction)
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "can't insert room restriction")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+
+	// send mail
+	htmlMsg := fmt.Sprintf(`<strong>Reservation Confirmation</strong> <br>
+       Dear %s, <br>
+       This is confirm reservation from %s to %s.`,
+		res.FirstName, res.StartDate.Format("02-01-2006"), res.EndDate.Format("02-01-2006"))
+
+	msg := models.MailData{
+		To:       res.Email,
+		From:     "nai@proton.me",
+		Subject:  "Reservation Confirmation",
+		Content:  htmlMsg,
+		Template: "basic.html",
+	}
+	m.App.MailChan <- msg
+
+	htmlMsgOwner := fmt.Sprintf(`<strong>You have new reservation</strong> <br>
+       Dear %s, <br>
+       You have new reservation, room is: %s, from %s to %s.`,
+		"Owner", res.Room.RoomName, res.StartDate.Format("02-01-2006"),
+		res.EndDate.Format("02-01-2006"))
+
+	msgOwner := models.MailData{
+		To:       "owner@gmail.com",
+		From:     "nai@gmail.com",
+		Subject:  "New Reservation",
+		Content:  htmlMsgOwner,
+		Template: "basic.html",
+	}
+
+	m.App.MailChan <- msgOwner
 
 	m.App.Session.Put(r.Context(), "reservation", res)
 
@@ -199,21 +242,68 @@ func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 }
 
 type jsonResponse struct {
-	OK      bool   `json:"ok"`
-	Message string `json:"message"`
+	OK        bool   `json:"ok"`
+	Message   string `json:"message"`
+	RoomID    string `json:"room_id"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
 }
 
 func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
-	resp := jsonResponse{
-		OK:      true,
-		Message: "Available",
-	}
-
-	out, err := json.MarshalIndent(resp, "", "     ")
+	// need to parse request body
+	err := r.ParseForm()
 	if err != nil {
-		helpers.ServerError(w, err)
+		// can't parse form, so return appropriate json
+		resp := jsonResponse{
+			OK:      false,
+			Message: "Internal server error",
+		}
+
+		out, _ := json.MarshalIndent(resp, "", "     ")
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(out)
 		return
 	}
+
+	sd := r.Form.Get("start")
+	ed := r.Form.Get("end")
+
+	layout := "02-01-2006"
+	startDate, err := time.Parse(layout, sd)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	endDate, err := time.Parse(layout, ed)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
+	roomID, err := strconv.Atoi(r.Form.Get("room_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
+	available, err := m.DB.SearchAvailabilityByDatesByRoomID(startDate, endDate, roomID)
+	if err != nil {
+		resp := jsonResponse{
+			OK:      false,
+			Message: "Error querying database",
+		}
+
+		out, _ := json.MarshalIndent(resp, "", "     ")
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(out)
+		return
+	}
+	resp := jsonResponse{
+		OK:        available,
+		Message:   "",
+		StartDate: sd,
+		EndDate:   ed,
+		RoomID:    strconv.Itoa(roomID),
+	}
+
+	out, _ := json.MarshalIndent(resp, "", "     ")
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
@@ -262,4 +352,117 @@ func (m *Repository) ChooseRoom(w http.ResponseWriter, r *http.Request) {
 	m.App.Session.Put(r.Context(), "reservation", res)
 
 	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)
+}
+
+func (m *Repository) BookRoom(w http.ResponseWriter, r *http.Request) {
+	RoomID, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	startDate := r.URL.Query().Get("s")
+	endDate := r.URL.Query().Get("e")
+
+	layout := "02-01-2006"
+	sd, err := time.Parse(layout, startDate)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	ed, err := time.Parse(layout, endDate)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
+	room, err := m.DB.GetRoomByID(RoomID)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	var res models.Reservation
+	res.Room.RoomName = room.RoomName
+	res.RoomID = RoomID
+	res.StartDate = sd
+	res.EndDate = ed
+
+	m.App.Session.Put(r.Context(), "reservation", res)
+
+	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)
+
+}
+
+func (m *Repository) ShowLogin(w http.ResponseWriter, r *http.Request) {
+	render.WriteTemplate(w, r, "login.page.gohtml", &models.TemplateData{
+		Form: forms.New(nil),
+	})
+}
+
+func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
+	_ = m.App.Session.RenewToken(r.Context())
+
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+	}
+
+	email := r.Form.Get("email")
+	password := r.Form.Get("password")
+
+	form := forms.New(r.PostForm)
+	form.Required("email", "password")
+	if !form.Valid() {
+		render.WriteTemplate(w, r, "login.page.gohtml", &models.TemplateData{})
+		return
+	}
+
+	id, _, err := m.DB.Authenticate(email, password)
+	if err != nil {
+		log.Println(err)
+
+		m.App.Session.Put(r.Context(), "error", "Invalid login")
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		return
+	}
+
+	user, err := m.DB.GetUserByID(id)
+	if err != nil {
+		log.Println(err)
+	}
+
+	userName := user.LastName
+
+	m.App.Session.Put(r.Context(), "user_name", userName)
+	m.App.Session.Put(r.Context(), "user_id", id)
+	m.App.Session.Put(r.Context(), "flash", "Logged in successfully")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (m *Repository) LogOut(w http.ResponseWriter, r *http.Request) {
+	_ = m.App.Session.Destroy(r.Context())
+	_ = m.App.Session.RenewToken(r.Context())
+
+	m.App.Session.Put(r.Context(), "flash", "Log out successfully!")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (m *Repository) AdminDashBoard(w http.ResponseWriter, r *http.Request) {
+	render.WriteTemplate(w, r, "admin-dashboard.page.gohtml", &models.TemplateData{})
+}
+
+func (m *Repository) AdminNewReservations(w http.ResponseWriter, r *http.Request) {
+	render.WriteTemplate(w, r, "admin-new-reservations.page.gohtml", &models.TemplateData{})
+}
+
+func (m *Repository) AdminAllReservations(w http.ResponseWriter, r *http.Request) {
+	reservations, err := m.DB.AllReservations()
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
+	data := make(map[string]interface{})
+	data["reservations"] = reservations
+
+	render.WriteTemplate(w, r, "admin-all-reservations.page.gohtml", &models.TemplateData{
+		Data: data,
+	})
+}
+
+func (m *Repository) AdminCalendar(w http.ResponseWriter, r *http.Request) {
+	render.WriteTemplate(w, r, "admin-calendar.page.gohtml", &models.TemplateData{})
 }

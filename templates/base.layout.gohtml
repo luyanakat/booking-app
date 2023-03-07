@@ -18,143 +18,180 @@
             .notie-container {
                 margin-top: 56px;
             }
+
+            .divider:after,
+            .divider:before {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: #eee;
+            }
+            .h-custom {
+                height: calc(100% - 73px);
+            }
+            @media (max-width: 450px) {
+                .h-custom {
+                    height: 100%;
+                }
+            }
         </style>
     </head>
 
     <body>
-   
-        <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">Booking Room</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="/">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/about">About</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                               aria-expanded="false">
-                                Rooms
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/normal-room">Normal Room</a></li>
-                                <li><a class="dropdown-item" href="/luxurious-room">Luxurious Room</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/search-availability" tabindex="-1" aria-disabled="true">Book
-                                now</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/contact" tabindex="-1" aria-disabled="true">Contact</a>
-                        </li>
-                    </ul>
 
-                </div>
-            </div>
-        </nav>
-        {{block "content" .}}
+    <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Booking Room</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Rooms
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/normal-room">Normal Room</a></li>
+                            <li><a class="dropdown-item" href="/luxurious-room">Luxurious Room</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/search-availability" tabindex="-1" aria-disabled="true">Book
+                            now</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact" tabindex="-1" aria-disabled="true">Contact</a>
+                    </li>
 
-        {{end}}
-        <!-- Footer -->
-        <footer class="bg-dark text-center text-white">
-            <!-- Grid container -->
-            <div class="container p-4">
-                <!-- Section: Social media -->
-                <section class="mb-4">
-                    <!-- Facebook -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
-                                class="fab fa-facebook-f"></i></a>
+                </ul>
 
-                    <!-- Twitter -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
-                                class="fab fa-twitter"></i></a>
 
-                    <!-- Google -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
-                                class="fab fa-google"></i></a>
-
-                    <!-- Instagram -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
-                                class="fab fa-instagram"></i></a>
-
-                    <!-- Linkedin -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
-                                class="fab fa-linkedin-in"></i></a>
-
-                    <!-- Github -->
-                    <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
-                                class="fab fa-github"></i></a>
-                </section>
-                <!-- Section: Social media -->
-
-                <!-- Section: Form -->
-                <section class="">
-                    <form action="">
-                        <!--Grid row-->
-                        <div class="row d-flex justify-content-center">
-                            <!--Grid column-->
-                            <div class="col-auto">
-                                <p class="pt-2">
-                                    <strong>Sign up for our newsletter</strong>
-                                </p>
-                            </div>
-                            <!--Grid column-->
-
-                            <!--Grid column-->
-                            <div class="col-md-5 col-12">
-                                <!-- Email input -->
-                                <div class="form-outline form-white mb-4">
-                                    <input type="email" id="form5Example21" class="form-control"/>
-                                    <label class="form-label mt-2" for="form5Example21">Email address</label>
-                                </div>
-                            </div>
-                            <!--Grid column-->
-
-                            <!--Grid column-->
-                            <div class="col-auto">
-                                <!-- Submit button -->
-                                <button type="submit" class="btn btn-outline-light mb-4">
-                                    Subscribe
-                                </button>
-                            </div>
-                            <!--Grid column-->
-                        </div>
-                        <!--Grid row-->
+                {{if eq .IsAuthenticated 1}}
+                    <form action="/admin/dashboard" method="get" style="margin-right: 10px">
+                        <input aria-disabled="true" style="border-radius: 50px;
+                                padding-left: 20px; padding-right: 20px" class="btn btn-primary btn-rounded"
+                               type="submit" value="Dashboard" />
                     </form>
-                </section>
-                <!-- Section: Form -->
 
-                <!-- Section: Text -->
-                <section class="mb-4">
-                    <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt distinctio earum
-                        repellat quaerat voluptatibus placeat nam, commodi optio pariatur est quia magnam
-                        eum harum corrupti dicta, aliquam sequi voluptate quas.
-                    </p>
-                </section>
-                <!-- Section: Text -->
-
-
+                    <form action="/user/logout" method="get">
+                                <input aria-disabled="true" style="border-radius: 50px;
+                                padding-left: 20px; padding-right: 20px" class="btn btn-primary btn-rounded"
+                                       type="submit" value="Logout" />
+                    </form>
+                {{else}}
+                    <form action="/user/login" method="get">
+                        <input aria-disabled="true" style="border-radius: 50px;
+                            padding-left: 20px; padding-right: 20px" class="btn btn-primary btn-rounded"
+                               type="submit" value="Login" />
+                    </form>
+                {{end}}
             </div>
-            <!-- Grid container -->
+        </div>
+    </nav>
+    {{block "content" .}}
 
-            <!-- Copyright -->
-            <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-                © 2020 Copyright:
-                <a class="text-white" href="https://github.com/luyanakat" target="_blank">luyanakat</a>
-            </div>
-            <!-- Copyright -->
-        </footer>
-        <!-- Footer -->
+    {{end}}
+    <!-- Footer -->
+    <footer class="bg-dark text-center text-white">
+        <!-- Grid container -->
+        <div class="container p-4">
+            <!-- Section: Social media -->
+            <section class="mb-4">
+                <!-- Facebook -->
+                <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
+                            class="fab fa-facebook-f"></i></a>
+
+                <!-- Twitter -->
+                <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
+                            class="fab fa-twitter"></i></a>
+
+                <!-- Google -->
+                <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
+                            class="fab fa-google"></i></a>
+
+                <!-- Instagram -->
+                <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
+                            class="fab fa-instagram"></i></a>
+
+                <!-- Linkedin -->
+                <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
+                            class="fab fa-linkedin-in"></i></a>
+
+                <!-- Github -->
+                <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"><i
+                            class="fab fa-github"></i></a>
+            </section>
+            <!-- Section: Social media -->
+
+            <!-- Section: Form -->
+            <section class="">
+                <form action="">
+                    <!--Grid row-->
+                    <div class="row d-flex justify-content-center">
+                        <!--Grid column-->
+                        <div class="col-auto">
+                            <p class="pt-2">
+                                <strong>Sign up for our newsletter</strong>
+                            </p>
+                        </div>
+                        <!--Grid column-->
+
+                        <!--Grid column-->
+                        <div class="col-md-5 col-12">
+                            <!-- Email input -->
+                            <div class="form-outline form-white mb-4">
+                                <input type="email" id="form5Example21" class="form-control"/>
+                                <label class="form-label mt-2" for="form5Example21">Email address</label>
+                            </div>
+                        </div>
+                        <!--Grid column-->
+
+                        <!--Grid column-->
+                        <div class="col-auto">
+                            <!-- Submit button -->
+                            <button type="submit" class="btn btn-outline-light mb-4">
+                                Subscribe
+                            </button>
+                        </div>
+                        <!--Grid column-->
+                    </div>
+                    <!--Grid row-->
+                </form>
+            </section>
+            <!-- Section: Form -->
+
+            <!-- Section: Text -->
+            <section class="mb-4">
+                <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt distinctio earum
+                    repellat quaerat voluptatibus placeat nam, commodi optio pariatur est quia magnam
+                    eum harum corrupti dicta, aliquam sequi voluptate quas.
+                </p>
+            </section>
+            <!-- Section: Text -->
+
+
+        </div>
+        <!-- Grid container -->
+
+        <!-- Copyright -->
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+            © 2020 Copyright:
+            <a class="text-white" href="https://github.com/luyanakat" target="_blank">luyanakat</a>
+        </div>
+        <!-- Copyright -->
+    </footer>
+    <!-- Footer -->
     </div>
 
     <!-- End Footer -->
@@ -215,9 +252,6 @@
                 confirmationButton: confirmationButton,
             })
         }
-        {{with .Error}}
-        notify('{{.}}', 'error')
-        {{end}}
 
         function Prompt() {
             let toast = function (c) {
@@ -323,6 +357,18 @@
                 custom: custom,
             }
         }
+
+        {{with .Error}}
+        notify("{{.}}", "error")
+        {{end}}
+
+        {{with .Flash}}
+        notify("{{.}}", "success")
+        {{end}}
+
+        {{with .Warning}}
+        notify("{{.}}", "warning")
+        {{end}}
     </script>
 
     </body>
