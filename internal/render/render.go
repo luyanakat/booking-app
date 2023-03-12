@@ -11,7 +11,12 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"time"
 )
+
+var functions = template.FuncMap{
+	"vnDate": VNDate,
+}
 
 var app *config.AppConfig
 var pathToTemplates = "./templates"
@@ -20,17 +25,17 @@ func NewRenderer(a *config.AppConfig) {
 	app = a
 }
 
+func VNDate(t time.Time) string {
+	return t.Format("02-01-2006")
+}
+
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
 	td.Flash = app.Session.PopString(r.Context(), "flash")
 	td.Error = app.Session.PopString(r.Context(), "error")
 	td.Warning = app.Session.PopString(r.Context(), "warning")
 
 	if app.Session.Exists(r.Context(), "user_id") {
-		userName := app.Session.Get(r.Context(), "user_name").(string)
-		stringMap := make(map[string]string)
-		stringMap["username"] = userName
 		td.IsAuthenticated = 1
-		td.StringMap = stringMap
 	}
 
 	td.CSRFToken = nosurf.Token(r)
@@ -79,7 +84,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 
 	for _, page := range pages {
 		name := filepath.Base(page)
-		ts, err := template.New(name).ParseFiles(page)
+		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
 		if err != nil {
 			return myCache, err
 		}
