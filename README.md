@@ -3,6 +3,8 @@
 
 A booking-hotel website to making reservations.
 
+![web](2image.png)
+
 ### Build and Run Project
 
 #### Create database
@@ -23,7 +25,7 @@ Firstly, because the program uses Postgresql to store user data, we need to crea
 
 - All the needed tables & constrains now created
 
-![Screenshot from 2022-06-01 15-40-53](screenshots/Screenshot-from-2022-06-01-15-40-53.png)
+![db](image.png)
 
 #### Run locally
 
