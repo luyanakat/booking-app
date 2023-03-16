@@ -14,6 +14,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 const portNumber = ":3000"
@@ -50,11 +52,12 @@ func run() (*driver.DB, error) {
 	gob.Register(models.User{})
 	gob.Register(models.Room{})
 	gob.Register(models.Restriction{})
+	gob.Register(map[string]int{})
 
 	mailChan := make(chan models.MailData)
 	app.MailChan = mailChan
 	// In deploy mode, change this
-	app.InProduction = false
+	app.InProduction = true
 
 	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	app.InfoLog = infoLog
@@ -70,9 +73,18 @@ func run() (*driver.DB, error) {
 
 	app.Session = session
 
+	dbHost := os.Getenv("DBHOST")
+	dbName := os.Getenv("DBNAME")
+	dbUser := os.Getenv("DBUSER")
+	dbPass := os.Getenv("DBPASS")
+	dbPort := os.Getenv("DBPORT")
+	dbSSL := os.Getenv("DBSSL")
+
 	// connect to db
 	log.Println("Connecting to db...")
-	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=postgres password=abc@123")
+	connectionString := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",
+		dbHost, dbPort, dbName, dbUser, dbPass, dbSSL)
+	db, err := driver.ConnectSQL(connectionString)
 	if err != nil {
 		log.Fatal("Can't connect to database")
 	}
@@ -85,7 +97,7 @@ func run() (*driver.DB, error) {
 	}
 
 	app.TemplateCache = tc
-	app.UseCache = false
+	app.UseCache = true
 
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandle(repo)

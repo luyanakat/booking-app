@@ -14,12 +14,16 @@
         <!-- plugin css for this page -->
         <!-- End plugin css for this page -->
         <!-- inject:css -->
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/notie/dist/notie.min.css">
         <link rel="stylesheet" href="/static/admin/css/style.css">
         <!-- endinject -->
         <link rel="shortcut icon" href="/static/admin/images/favicon.png"/>
         <style>
             .content-wrapper {
                 background: white;
+            }
+            .notie-container {
+                margin-top: 70px;
             }
         </style>
         {{block "css" . }}
@@ -138,9 +142,167 @@
     <script src="/static/admin/js/todolist.js"></script>
     <!-- endinject -->
     <!-- Custom js for this page-->
+    <script src="https://unpkg.com/notie"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/static/admin/js/dashboard.js"></script>
     <!-- End custom js for this page-->
+    <script>
+        let attention = Prompt();
 
+
+        // caution validate for bootstrap
+        (() => {
+            'use strict'
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            const forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+
+
+        function notify(msg, msgType) {
+            notie.alert({
+                type: msgType, // optional, default = 4, enum: [1, 2, 3, 4, 5, 'success', 'warning', 'error', 'info', 'neutral']
+                text: msg,
+                // stay: Boolean, // optional, default = false
+                // time: Number, // optional, default = 3, minimum = 1,
+                // position: String // optional, default = 'top', enum: ['top', 'bottom']
+            })
+        }
+
+        function notifyModal(title, text, icon, confirmationButton) {
+            Swal.fire({
+                title: title,
+                html: text,
+                icon: icon,
+                confirmationButton: confirmationButton,
+            })
+        }
+
+        function Prompt() {
+            let toast = function (c) {
+                const {
+                    title = '',
+                    position = 'top-end',
+                } = c;
+                const Toast = Swal.mixin({
+                    toast: true,
+                    title: title,
+                    position: position,
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+                Toast.fire({})
+            }
+
+            let success = function (c) {
+                const {
+                    title = 'Oops',
+                    text = 'Some thing went wrong!',
+                    footer = '<a href>why do I have this issue?</a>',
+                } = c
+
+                Swal.fire({
+                    icon: 'success',
+                    title: title,
+                    text: text,
+                    footer: footer,
+                })
+            }
+
+            let error = function (c) {
+                const {
+                    title = 'Oops',
+                    text = 'Some thing went wrong!',
+                    footer = '<a href>why do I have this issue?</a>',
+                } = c
+
+                Swal.fire({
+                    icon: 'error',
+                    title: title,
+                    text: text,
+                    footer: footer,
+                })
+            }
+
+            async function custom(c) {
+                const {
+                    icon = "",
+                    msg = "",
+                    title = "",
+                    showConfirmButton = true,
+                } = c;
+
+                const {value: result} = await Swal.fire({
+                    title: title,
+                    html: msg,
+                    icon: icon,
+                    backdrop: false,
+                    focusConfirm: false,
+                    showCancelButton: showConfirmButton,
+                    willOpen: () => {
+                        if (c.willOpen !== undefined) {
+                            c.willOpen()
+                        }
+                    },
+                    didOpen: () => {
+                        if (c.didOpen !== undefined) {
+                            c.didOpen()
+                        }
+                    }
+                })
+
+                if (result) {
+                    if (result.dismiss !== Swal.DismissReason.cancel) {
+                        if (result.value !== '') {
+                            if (c.callback !== undefined) {
+                                c.callback(result)
+                            }
+                        } else {
+                            c.callback(false)
+                        }
+                    } else {
+                        c.callback(false)
+                    }
+                }
+            }
+
+            return {
+                toast: toast,
+                success: success,
+                error: error,
+                custom: custom,
+            }
+        }
+
+        {{with .Error}}
+        notify("{{.}}", "error")
+        {{end}}
+
+        {{with .Flash}}
+        notify("{{.}}", "success")
+        {{end}}
+
+        {{with .Warning}}
+        notify("{{.}}", "warning")
+        {{end}}
+    </script>
     {{block "js" . }}
 
     {{end}}

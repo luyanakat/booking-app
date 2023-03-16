@@ -69,54 +69,120 @@
     }
 </style>
 {{define "content"}}
-    <div style="height: 100vh ">
-    <div class="about-section mt-5">
-        <h1>About Us Page</h1>
-        <p>Some text about who we are and what we do.</p>
-        <p>Resize the browser window to see that this page is responsive by the way.</p>
-    </div>
-    <div class="container">
-    <h2 class="container mt-5" style="text-align:center">Our Team</h2>
-    <div class="row mb-3">
-        <div class="column">
-            <div class="card">
-                <img src="/w3images/team1.jpg" alt="Jane" style="width:100%">
-                <div class="container">
-                    <h2>Jane Doe</h2>
-                    <p class="title">CEO & Founder</p>
-                    <p>Some text that describes me lorem ipsum ipsum lorem.</p>
-                    <p>jane@example.com</p>
-                    <p><button class="button">Contact</button></p>
-                </div>
-            </div>
-        </div>
+    <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Booking Room</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/about">About</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Rooms
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/normal-room">Normal Room</a></li>
+                            <li><a class="dropdown-item" href="/luxurious-room">Luxurious Room</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search-availability" tabindex="-1" aria-disabled="true">Book
+                            now</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact" tabindex="-1" aria-disabled="true">Contact</a>
+                    </li>
 
-        <div class="column">
-            <div class="card">
-                <img src="/w3images/team2.jpg" alt="Mike" style="width:100%">
-                <div class="container">
-                    <h2>Mike Ross</h2>
-                    <p class="title">Art Director</p>
-                    <p>Some text that describes me lorem ipsum ipsum lorem.</p>
-                    <p>mike@example.com</p>
-                    <p><button class="button">Contact</button></p>
-                </div>
-            </div>
-        </div>
+                </ul>
 
-        <div class="column">
-            <div class="card">
-                <img src="/w3images/team3.jpg" alt="John" style="width:100%">
-                <div class="container">
-                    <h2>John Doe</h2>
-                    <p class="title">Designer</p>
-                    <p>Some text that describes me lorem ipsum ipsum lorem.</p>
-                    <p>john@example.com</p>
-                    <p><button class="button">Contact</button></p>
+
+                {{if eq .IsAuthenticated 1}}
+                    <form action="/admin/dashboard" method="get" style="margin-right: 10px">
+                        <input aria-disabled="true" style="border-radius: 50px;
+                                padding-left: 20px; padding-right: 20px" class="btn btn-primary btn-rounded"
+                               type="submit" value="Dashboard"/>
+                    </form>
+
+                    <form action="/user/logout" method="get">
+                        <input aria-disabled="true" style="border-radius: 50px;
+                                padding-left: 20px; padding-right: 20px" class="btn btn-primary btn-rounded"
+                               type="submit" value="Logout"/>
+                    </form>
+                {{else}}
+                    <form action="/user/login" method="get">
+                        <input aria-disabled="true" style="border-radius: 50px;
+                            padding-left: 20px; padding-right: 20px" class="btn btn-primary btn-rounded"
+                               type="submit" value="Login"/>
+                    </form>
+                {{end}}
+            </div>
+        </div>
+    </nav>
+
+    <div style="height: 100vh">
+        <div class="about-section mt-5">
+            <h1>About Us Page</h1>
+            <p>Some text about who we are and what we do.</p>
+            <p>Resize the browser window to see that this page is responsive by the way.</p>
+        </div>
+        <div class="container">
+            <h2 class="container mt-5" style="text-align:center">Our Team</h2>
+            <div class="row mb-3">
+                <div class="column">
+                    <div class="card">
+                        <img src="/w3images/team1.jpg" alt="Jane" style="width:100%">
+                        <div class="container">
+                            <h2>Jane Doe</h2>
+                            <p class="title">CEO & Founder</p>
+                            <p>Some text that describes me lorem ipsum ipsum lorem.</p>
+                            <p>jane@example.com</p>
+                            <p>
+                                <button class="button">Contact</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="card">
+                        <img src="/w3images/team2.jpg" alt="Mike" style="width:100%">
+                        <div class="container">
+                            <h2>Mike Ross</h2>
+                            <p class="title">Art Director</p>
+                            <p>Some text that describes me lorem ipsum ipsum lorem.</p>
+                            <p>mike@example.com</p>
+                            <p>
+                                <button class="button">Contact</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="card">
+                        <img src="/w3images/team3.jpg" alt="John" style="width:100%">
+                        <div class="container">
+                            <h2>John Doe</h2>
+                            <p class="title">Designer</p>
+                            <p>Some text that describes me lorem ipsum ipsum lorem.</p>
+                            <p>john@example.com</p>
+                            <p>
+                                <button class="button">Contact</button>
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    </div>
     </div>
 {{end}}
