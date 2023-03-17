@@ -3,6 +3,8 @@
 
 A booking-hotel website to making reservations.
 
+Temporarily deploy on: [Ngrok](https://a6c4-1-54-211-82.ap.ngrok.io) (I'm poor)
+
 ![web](2image.png)
 
 ### Build and Run Project
