@@ -3,7 +3,7 @@
 
 A booking-hotel website to making reservations.
 
-Temporarily deploy on: [Ngrok](https://a6c4-1-54-211-82.ap.ngrok.io) (I'm poor)
+Temporarily deploy on: [Ngrok](https://708e-42-117-149-19.ap.ngrok.io/) (I'm poor)
 
 Admin Account: admin@admin.com
 
